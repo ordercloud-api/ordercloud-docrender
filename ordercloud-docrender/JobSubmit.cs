@@ -7,18 +7,31 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using OrderCloud.AzureStorage;
 
 namespace OrderCloud.DocRender.Functions
 {
     public static class JobSubmit
     {
-        [FunctionName("JobSubmit")]
+        [FunctionName("JobStatus")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "jobs/{orderdirection}/{orderid}/{lineid}/submit")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "jobs/{orderdirection}/{orderid}/{lineid}/render")] HttpRequest req,
             ILogger log, string orderdirection, string orderid, string lineid)
         {
-			var UserContext = await FunctionHelpers.Auth(req, orderdirection, orderid, lineid);
-	        return new OkObjectResult(new {status = "OK"});
+			var userContext = await FunctionHelpers.Auth(req, orderdirection, orderid, lineid);
+	        var job = await Container.Get<JobService>().GetOrSetLineJobAsync(userContext, true);
+	        if (job.JobStatus == JobStatus.inprogress.ToString())
+	        {
+		        return new OkObjectResult(new { status = "Job is already inprogress" });
+			}
+	        else
+	        {
+		        job.JobStatus = JobStatus.inprogress.ToString();
+		        var t2 = Container.Get<QueueService>().QueueMessageAsync("renderjob", new { userContext, job });
+		        var t1 = Container.Get<TableService>().InsertOrReplaceAsync(job);
+		        Task.WaitAll(t1, t2);
+		        return new OkObjectResult(new { status = "OK" });
+			}
         }
 	}
 }

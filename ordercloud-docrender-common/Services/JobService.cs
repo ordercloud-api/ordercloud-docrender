@@ -47,19 +47,23 @@ namespace OrderCloud.DocRender
 			var d = containerRef.GetDirectoryReference($"{userContext.OrgID}/{t.BlobFolder}/{folder}");
 			return d.GetBlockBlobReference(fileid);
 		}
-		public async Task<LineItemJob> GetOrSetLineJobAsync(UserContext context)
+		public async Task<LineItemJob> GetOrSetLineJobAsync(UserContext context, bool requiredExisiting = false)
 		{
 			LineItemJob t = null;
 			try
 			{
-				t = await _table.GetAsync<LineItemJob>(context.OrgID, $"{context.OrderID}-{context.LineItemID}", "LineItemJob");
+				t = await _table.GetAsync<LineItemJob>(context.OrgID, $"{context.OrderID}-{context.LineItemID}");
 			}
 			catch (OrderCloud.AzureStorage.Exceptions.NotFoundException)
+			when(!requiredExisiting)
 			{
-				t = new LineItemJob();
-				t.RowKey = $"{context.OrderID}-{context.LineItemID}";
-				t.PartitionKey = context.OrderID;
-				t.BlobFolder = Guid.NewGuid().ToString();
+				t = new LineItemJob
+				{
+					RowKey = $"{context.OrderID}-{context.LineItemID}",
+					PartitionKey = context.OrgID,
+					BlobFolder = Guid.NewGuid().ToString(),
+					JobStatus = JobStatus.unsubmitted.ToString()
+				};
 				await _table.InsertOrReplaceAsync(t);
 			}
 			return t;

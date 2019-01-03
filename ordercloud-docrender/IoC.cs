@@ -24,6 +24,7 @@ namespace OrderCloud.DocRender
 			s.AddTransient(x => new TableService(appSettings.StorageConnection));
 			s.AddTransient(x=> new BlobService(appSettings.StorageConnection));
 			s.AddTransient<OcAuthorizationService>();
+			s.AddTransient<QueueService>(x => new QueueService(appSettings.StorageConnection));
 			s.AddSingleton<AppSettings>(appSettings);
 			_serviceProvider = s.BuildServiceProvider();
 		}
