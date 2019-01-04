@@ -44,6 +44,8 @@ namespace OrderCloud.DocRender
 			string id
 			)
 		{
+			var t = req.Query["token"];
+
 			var userContext = await FunctionHelpers.Auth(req, orderdirection, orderid, lineid);
 			var bob = Container.Get<JobService>();
 			await bob.WriteJobFile(userContext, "assets", id, req.Body);

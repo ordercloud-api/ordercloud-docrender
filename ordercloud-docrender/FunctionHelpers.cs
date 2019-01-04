@@ -10,6 +10,7 @@ namespace OrderCloud.DocRender
 	{
 		public static async Task<UserContext> Auth(HttpRequest req, string orderdirection, string orderid, string lineid)
 		{
+			
 			return await Container.Get<OcAuthorizationService>().AuthorizeAsync("parse the token out", orderdirection, orderid, lineid);
 		}
 	}
