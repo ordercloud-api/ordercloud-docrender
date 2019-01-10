@@ -24,11 +24,10 @@ namespace OrderCloud.DocRender
 			s.AddTransient<JobService>();
 			s.AddTransient(x => new TableService(appSettings.StorageConnection));
 			s.AddTransient(x=> new BlobService(appSettings.StorageConnection));
-			s.AddTransient<OcAuthorizationService>();
 			s.AddTransient<QueueService>(x => new QueueService(appSettings.StorageConnection));
 			s.AddSingleton<AppSettings>(appSettings);
 			s.AddSingleton<OrderCloudClient>();
-
+			s.AddTransient<DocRenderImplementationService>();
 			_serviceProvider = s.BuildServiceProvider();
 
 		}

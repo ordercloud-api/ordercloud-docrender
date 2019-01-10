@@ -18,7 +18,7 @@ namespace OrderCloud.DocRender.Functions
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "jobs/{orderdirection}/{orderid}/{lineid}/render")] HttpRequest req,
             ILogger log, string orderdirection, string orderid, string lineid)
         {
-			var userContext = await FunctionHelpers.Auth(req, orderdirection, orderid, lineid);
+			var userContext = await FunctionHelpers.AuthAsync(req, orderdirection, orderid, lineid);
 	        var job = await Container.Get<JobService>().GetOrSetLineJobAsync(userContext, true);
 	        if (job.JobStatus == JobStatus.inprogress.ToString())
 	        {

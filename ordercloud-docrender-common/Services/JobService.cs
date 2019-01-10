@@ -23,19 +23,19 @@ namespace OrderCloud.DocRender
 		public async Task WriteJobFile(UserContext userContext, string folder, string fileid, Stream s)
 		{
 			var lineJob = await GetOrSetLineJobAsync(userContext);
-			await _blob.WriteBlockBlobFromStreamAsync("orgs", $"{userContext.OrgID}/{lineJob.BlobFolder}/{folder}", fileid, s);
+			await _blob.WriteBlockBlobFromStreamAsync("docrenderapps", $"{userContext.DocRenderImplementationID}/{lineJob.BlobFolder}/{folder}", fileid, s);
 		}
 
 		public async Task<List<IListBlobItem>> ListAssets(UserContext userContext)
 		{
 			var lineJob = await GetOrSetLineJobAsync(userContext);
-			return await _blob.ListAllBlobsAsync("orgs", $"{userContext.OrgID}/{lineJob.BlobFolder}/assets");
+			return await _blob.ListAllBlobsAsync("docrenderapps", $"{userContext.DocRenderImplementationID}/{lineJob.BlobFolder}/assets");
 		}
 		public async Task DeleteJobFile(UserContext userContext, string folder, string fileid)
 		{
 			var t = await GetOrSetLineJobAsync(userContext);
-			var containerRef = _blob.BlobClient.GetContainerReference("orgs");
-			var d = containerRef.GetDirectoryReference($"{userContext.OrgID}/{t.BlobFolder}/{folder}");
+			var containerRef = _blob.BlobClient.GetContainerReference("docrenderapps");
+			var d = containerRef.GetDirectoryReference($"{userContext.DocRenderImplementationID}/{t.BlobFolder}/{folder}");
 			var blob = d.GetBlockBlobReference(fileid);
 			await blob.DeleteAsync();
 		}
@@ -43,8 +43,8 @@ namespace OrderCloud.DocRender
 		public async Task<CloudBlockBlob> GetJobFile(UserContext userContext, string folder, string fileid)
 		{
 			var t = await GetOrSetLineJobAsync(userContext);
-			var containerRef = _blob.BlobClient.GetContainerReference("orgs");
-			var d = containerRef.GetDirectoryReference($"{userContext.OrgID}/{t.BlobFolder}/{folder}");
+			var containerRef = _blob.BlobClient.GetContainerReference("docrenderapps");
+			var d = containerRef.GetDirectoryReference($"{userContext.DocRenderImplementationID}/{t.BlobFolder}/{folder}");
 			return d.GetBlockBlobReference(fileid);
 		}
 		public async Task<LineItemJob> GetOrSetLineJobAsync(UserContext context, bool requiredExisiting = false)
@@ -52,7 +52,7 @@ namespace OrderCloud.DocRender
 			LineItemJob t = null;
 			try
 			{
-				t = await _table.GetAsync<LineItemJob>(context.OrgID, $"{context.OrderID}-{context.LineItemID}");
+				t = await _table.GetAsync<LineItemJob>(context.DocRenderImplementationID, $"{context.OrderID}-{context.LineItemID}");
 			}
 			catch (OrderCloud.AzureStorage.Exceptions.NotFoundException)
 			when(!requiredExisiting)
@@ -60,7 +60,7 @@ namespace OrderCloud.DocRender
 				t = new LineItemJob
 				{
 					RowKey = $"{context.OrderID}-{context.LineItemID}",
-					PartitionKey = context.OrgID,
+					PartitionKey = context.DocRenderImplementationID,
 					BlobFolder = Guid.NewGuid().ToString(),
 					JobStatus = JobStatus.unsubmitted.ToString()
 				};

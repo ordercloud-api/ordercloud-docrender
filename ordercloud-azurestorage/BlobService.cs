@@ -87,7 +87,7 @@ namespace OrderCloud.AzureStorage
 		
 		public async Task<List<IListBlobItem>>ListAllBlobsAsync(string storageContainerName, string folderPath)
 		{
-			var containerRef = _blobClient.GetContainerReference("orgs");
+			var containerRef = _blobClient.GetContainerReference(storageContainerName);
 			var dir = containerRef.GetDirectoryReference(folderPath);
 			BlobContinuationToken ct = null;
 			List<IListBlobItem> results = new List<IListBlobItem>();

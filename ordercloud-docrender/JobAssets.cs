@@ -23,7 +23,7 @@ namespace OrderCloud.DocRender
 			string orderid,
 			string lineid)
 		{
-			var userContext = await FunctionHelpers.Auth(req, orderdirection, orderid, lineid);
+			var userContext = await FunctionHelpers.AuthAsync(req, orderdirection, orderid, lineid);
 			var bob = Container.Get<JobService>();
 			var result = await bob.ListAssets(userContext);
 
@@ -45,7 +45,7 @@ namespace OrderCloud.DocRender
 			string id
 			)
 		{
-			var userContext = await FunctionHelpers.Auth(req, orderdirection, orderid, lineid);
+			var userContext = await FunctionHelpers.AuthAsync(req, orderdirection, orderid, lineid);
 			var bob = Container.Get<JobService>();
 			await bob.WriteJobFile(userContext, "assets", id, req.Body);
 			return new OkObjectResult(new {status = "OK"});
@@ -60,7 +60,7 @@ namespace OrderCloud.DocRender
 			string id
 		)
 		{
-			var userContext = await FunctionHelpers.Auth(req, orderdirection, orderid, lineid);
+			var userContext = await FunctionHelpers.AuthAsync(req, orderdirection, orderid, lineid);
 			var file = await Container.Get<JobService>().GetJobFile(userContext, "assets", id);
 			var stream = await file.OpenReadAsync();
 			return new FileStreamResult(stream, file.Properties.ContentType);
@@ -76,7 +76,7 @@ namespace OrderCloud.DocRender
 			string id
 			)
 		{
-			var userContext = await FunctionHelpers.Auth(req, orderdirection, orderid, lineid);
+			var userContext = await FunctionHelpers.AuthAsync(req, orderdirection, orderid, lineid);
 			var bob = Container.Get<JobService>();
 			await bob.DeleteJobFile(userContext, "assets", id);
 			return new OkObjectResult(new { status = "OK" });
