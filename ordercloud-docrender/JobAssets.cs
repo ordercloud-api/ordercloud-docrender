@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -44,8 +45,6 @@ namespace OrderCloud.DocRender
 			string id
 			)
 		{
-			var t = req.Query["token"];
-
 			var userContext = await FunctionHelpers.Auth(req, orderdirection, orderid, lineid);
 			var bob = Container.Get<JobService>();
 			await bob.WriteJobFile(userContext, "assets", id, req.Body);

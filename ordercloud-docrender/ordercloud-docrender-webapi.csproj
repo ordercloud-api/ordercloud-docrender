@@ -8,6 +8,7 @@
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.24" />
+    <PackageReference Include="OrderCloud.SDK" Version="0.6.10" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ordercloud-azurestorage\ordercloud-azurestorage.csproj" />

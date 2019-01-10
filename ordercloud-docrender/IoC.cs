@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.WindowsAzure.Storage.Blob.Protocol;
 using OrderCloud.AzureStorage;
+using OrderCloud.SDK;
 
 namespace OrderCloud.DocRender
 {
@@ -26,7 +27,10 @@ namespace OrderCloud.DocRender
 			s.AddTransient<OcAuthorizationService>();
 			s.AddTransient<QueueService>(x => new QueueService(appSettings.StorageConnection));
 			s.AddSingleton<AppSettings>(appSettings);
+			s.AddSingleton<OrderCloudClient>();
+
 			_serviceProvider = s.BuildServiceProvider();
+
 		}
 
 		public static T Get<T>()
