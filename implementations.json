@@ -1,0 +1,17 @@
+/*
+ * this is a template of a file that will go in root of the docrenderapps blob storage container on azure.
+ * it will match order cloud ClientIDs to one data folder in the azure storage backend
+ * this will allow multiple apps access to the render api. for example, a buyer app and an admin app.
+ */
+{
+	"implementations": [
+		{
+			"ID": "oneappfolderforacustomer",
+					"ClientIDs": [ "f41ac7ce-f2ce-4526-81f2-06193d08d651", "a8d19b8b-a99a-484e-b07e-bcd772b5f0cf" ]
+		},
+		{
+			"ID": "anotherappfolder",
+					"ClientIDs": [ "329c34d0-5631-4ce9-b853-fe688875bc37", "febd247d-1003-4b38-9ad8-647074eafc6c" ]
+		}
+	]
+}
