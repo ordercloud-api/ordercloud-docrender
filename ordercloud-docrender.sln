@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ordercloud-docrender-webapi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ordercloud-azurestorage", "ordercloud-azurestorage\ordercloud-azurestorage.csproj", "{82246AA6-1C69-420E-AA63-0F7D0D127AE4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ordercloud-docrender-common", "ordercloud-docrender-common\ordercloud-docrender-common.csproj", "{B48BA594-C820-4591-9050-928C118BCAA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ordercloud-docrender-common", "ordercloud-docrender-common\ordercloud-docrender-common.csproj", "{B48BA594-C820-4591-9050-928C118BCAA5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4AEFB139-FE5B-4EC2-8899-291CAF7BE092}"
+	ProjectSection(SolutionItems) = preProject
+		configurations.json = configurations.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

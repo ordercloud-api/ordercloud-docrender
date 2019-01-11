@@ -24,16 +24,13 @@ namespace OrderCloud.DocRender
 			string lineid)
 		{
 			var userContext = await FunctionHelpers.AuthAsync(req, orderdirection, orderid, lineid);
-			var bob = Container.Get<JobService>();
-			var result = await bob.ListAssets(userContext);
+			var job = Container.Get<JobService>();
+			var result = await job.ListAssets(userContext);
 
-			return new OkObjectResult(result.ConvertAll<AssetFile>(x=> new AssetFile{Name = Path.GetFileName(x.Uri.ToString())}));
+			return new OkObjectResult(result.ConvertAll(x=> new {Name = Path.GetFileName(x.Uri.ToString())}));
 		}
 
-		public class AssetFile
-		{
-			public string Name { get; set; }
-		}
+		
 		[FunctionName("SaveJobAsset")]
 		public static async Task<IActionResult> Run(
 			[HttpTrigger(AuthorizationLevel.Function, "post", Route =
@@ -46,8 +43,8 @@ namespace OrderCloud.DocRender
 			)
 		{
 			var userContext = await FunctionHelpers.AuthAsync(req, orderdirection, orderid, lineid);
-			var bob = Container.Get<JobService>();
-			await bob.WriteJobFile(userContext, "assets", id, req.Body);
+			var job = Container.Get<JobService>();
+			await job.WriteJobFile(userContext, "assets", id, req.Body);
 			return new OkObjectResult(new {status = "OK"});
 		}
 		[FunctionName("GetJobAsset")]
@@ -77,8 +74,8 @@ namespace OrderCloud.DocRender
 			)
 		{
 			var userContext = await FunctionHelpers.AuthAsync(req, orderdirection, orderid, lineid);
-			var bob = Container.Get<JobService>();
-			await bob.DeleteJobFile(userContext, "assets", id);
+			var job = Container.Get<JobService>();
+			await job.DeleteJobFile(userContext, "assets", id);
 			return new OkObjectResult(new { status = "OK" });
 		}
 	}

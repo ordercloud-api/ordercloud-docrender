@@ -4,11 +4,11 @@ using System.Text;
 
 namespace OrderCloud.DocRender
 {
-	public class JsonImplementationFile
+	public class JsonConfigurationFile
 	{
-		public List<DocRenderImplementation> implementations { get; set; }
+		public List<DocRenderConfiguration> Configurations { get; set; }
 	}
-	public class DocRenderImplementation
+	public class DocRenderConfiguration
 	{
 		public string ID { get; set; }
 		public List<string> ClientIDs { get; set; }

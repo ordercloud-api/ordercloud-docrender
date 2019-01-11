@@ -13,16 +13,5 @@ namespace OrderCloud.DocRender
 		public LineItemJob(){}
 		public string BlobFolder { get; set; }
 		public string JobStatus { get; set; }
-		//public override IDictionary<string, EntityProperty> WriteEntity(OperationContext operationContext)
-		//{
-		//	var d = base.WriteEntity(operationContext);
-		//	d.Add("JobStatus", new EntityProperty(this.JobStatus.ToString()));
-		//	return d;
-		//}
-
-		//public override void ReadEntity(IDictionary<string, EntityProperty> properties, OperationContext operationContext)
-		//{
-		//	base.ReadEntity(properties, operationContext);
-		//}
 	}
 }

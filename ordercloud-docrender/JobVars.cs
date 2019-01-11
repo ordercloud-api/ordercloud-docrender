@@ -21,8 +21,8 @@ namespace OrderCloud.DocRender.Functions
 			)
 		{
 			var UserContext = await FunctionHelpers.AuthAsync(req, orderdirection, orderid, lineid);
-			var bob = Container.Get<JobService>();
-			await bob.WriteJobFile(UserContext, "JobVars", "job.json", req.Body);
+			var job = Container.Get<JobService>();
+			await job.WriteJobFile(UserContext, "JobVars", "job.json", req.Body);
 			return new OkObjectResult(new { status = "OK" });
 		}
 

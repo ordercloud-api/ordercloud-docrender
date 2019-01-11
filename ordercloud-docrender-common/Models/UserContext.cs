@@ -7,7 +7,7 @@ namespace OrderCloud.DocRender
 	public class UserContext
 	{
 		public string ClientID { get; set; }
-		public string DocRenderImplementationID { get; set; }
+		public string DocRenderConfigurationID { get; set; }
 		public string UserName { get; set; }
 		public string OrderID { get; set; }
 		public string LineItemID { get; set;}

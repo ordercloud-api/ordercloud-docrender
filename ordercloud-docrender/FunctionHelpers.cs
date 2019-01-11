@@ -19,7 +19,7 @@ namespace OrderCloud.DocRender
 			var direction = Enum.Parse<OrderDirection>(orderdirection, true);
 			var clientID = jwt.Claims.First(x => x.Type == "cid").Value;
 
-			var implementation = await Container.Get<DocRenderImplementationService>().GetByClientIDAsync(clientID);
+			var configuration = await Container.Get<DocRenderConfigurationService>().GetByClientIDAsync(clientID);
 
 			try //validate they have access to this order/lineitem
 			{
@@ -29,7 +29,7 @@ namespace OrderCloud.DocRender
 					ClientID = clientID,
 					LineItemID = lineid,
 					OrderID = orderid,
-					DocRenderImplementationID = implementation.ID,
+					DocRenderConfigurationID = configuration.ID,
 					UserName = jwt.Claims.First(x => x.Type == "usr").Value,
 					OrderDirection = orderdirection
 				};

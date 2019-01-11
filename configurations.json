@@ -4,7 +4,7 @@
  * this will allow multiple apps access to the render api. for example, a buyer app and an admin app.
  */
 {
-	"implementations": [
+	"Configurations": [
 		{
 			"ID": "oneappfolderforacustomer",
 					"ClientIDs": [ "f41ac7ce-f2ce-4526-81f2-06193d08d651", "a8d19b8b-a99a-484e-b07e-bcd772b5f0cf" ]
