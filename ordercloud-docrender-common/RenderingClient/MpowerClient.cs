@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,26 +12,24 @@ namespace OrderCloud.DocRender
 {
 	public class MpowerClient : TcpClient
 	{
-		private readonly string hostName;
-		private readonly int hostPort;
-		
-		public MpowerClient(string mpowerHostName, int mpowerHostPort)
+		private readonly AppSettings _settings;
+
+		public MpowerClient(AppSettings settings)
 		{
-			hostName = mpowerHostName;
-			hostPort = mpowerHostPort;
+			_settings = settings;
 		}
 
 		// SubmitToMpower takes the command packet and an out string for the response
-		public async Task<JobRenderResponse>SubmitRenderJobAsync(Dictionary<string, string> DocVars)
+		public async Task<JobRenderResponse>SubmitRenderJobAsync(Dictionary<string, string> DocVars, Func<string, Task> moveFileOpAsync)
 		{
 			var jobResponse = new JobRenderResponse {DateQueued = DateTime.Now, Success = false, ServerJobResponse = ""};
 			try
 			{
-				this.Connect(hostName, hostPort);
+				this.Connect(_settings.MpowerHostName, _settings.MpowerTCPPort);
 			}
 			catch (SocketException ex)
 			{
-				jobResponse.ErrorMessage = "Mpower doesn't appear to be running on: " + hostName + " port: " + hostPort + ". Error: " + ex.Message; ;
+				jobResponse.ErrorMessage = "Mpower doesn't appear to be running on: " + _settings.MpowerHostName + " port: " + _settings.MpowerTCPPort + ". Error: " + ex.Message; ;
 				return jobResponse;
 			}
 			Socket sock = this.Client;
@@ -75,10 +74,53 @@ namespace OrderCloud.DocRender
 				return jobResponse;
 			}
 			this.Close();
-			jobResponse.Success = true;
+			
+			jobResponse.Success = await FindPathAndMoveFileAsync(jobResponse.ServerJobResponse, moveFileOpAsync);
 			return jobResponse;
 		}
-		
+
+		private async Task<bool> FindPathAndMoveFileAsync(string responseData, Func<string, Task>moveFileOpAsync)
+		{
+			StringReader sr = new StringReader(responseData);
+			string transactionID = sr.ReadLine();
+
+			if (!transactionID.StartsWith("R0000000") || !responseData.Contains("Job Status = SUCCESS"))
+			{
+				return false;
+			}
+
+			string machineName = null;
+			while (true)
+			{
+				machineName = sr.ReadLine();
+				if (machineName == null || machineName.Contains("Machine name"))
+					break;
+			}
+			if (machineName == null)
+				return false;
+			
+			machineName = machineName.Replace("J0000100: Machine name: ", "").Trim();
+			sr.Close();
+
+			transactionID = transactionID.Replace("R0000000:", "").Trim();
+			var jobOutputPath = @"\\" + machineName + $@"\{_settings.LocalDriveLeterForMpowerFinaloutput}\finaloutput\" + transactionID;
+			string[] files = Directory.GetFiles(jobOutputPath);
+			if (files.Length > 1)
+				files = Directory.GetFiles(jobOutputPath, "*001*.*");//add extension based on product settings?
+
+			if (files.Length == 0)
+				return false; 
+
+			var file = new FileInfo(files[0]);
+			await moveFileOpAsync(files[0]);
+			try
+			{
+				Directory.Delete(jobOutputPath, true);
+			}
+			catch { }//don't care
+
+			return true;
+		}
 		private byte[] BuildCommandPacket(Dictionary<string, string> DocVars)
 		{
 			var commandName = "SumitJob";
@@ -105,7 +147,7 @@ namespace OrderCloud.DocRender
 			AddVar("_sys_QueueName", "jobqueuname", job);
 			AddVar("_sys_ClientJobMonitor", "True", job);
 			AddVar("ProjectName", "projectid and path", job);
-			AddVar("_sys_FinalOutputDir", @"\\finalserveroutput\mpoweroutput", job);
+			AddVar("_sys_FinalOutputDir", $@"{_settings.LocalDriveLeterForMpowerFinaloutput}\finaloutput", job);
 			//AddVar("_sys_JobDataSourceFile", "a datasource for this job not the project", job);
 
 			foreach (var name in DocVars.Keys)

@@ -19,10 +19,10 @@ namespace OrderCloud.DocRender.Functions
             ILogger log, string orderdirection, string orderid, string lineid)
         {
 			var userContext = await FunctionHelpers.AuthAsync(req, orderdirection, orderid, lineid);
-	        var job = await Container.Get<JobService>().GetOrSetLineJobAsync(userContext, true);
-	        if (job.JobStatus == JobStatus.inprogress.ToString())
-	        {
-		        return new OkObjectResult(new { status = "Job is already inprogress" });
+			var job = await Container.Get<JobService>().GetOrSetLineJobAsync(userContext, true);
+			if (job.JobStatus == JobStatus.inprogress.ToString())
+			{
+				return new OkObjectResult(new { status = "Job is already inprogress" });
 			}
 	        else
 	        {

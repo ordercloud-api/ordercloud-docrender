@@ -11,5 +11,6 @@ namespace OrderCloud.DocRender
 		public DateTime DateQueued { get; set; }
 		public string JobPacket { get; set; }
 		public string ServerJobResponse { get; set; }
+		public string FileOutputPath { get; set; }
 	}
 }
