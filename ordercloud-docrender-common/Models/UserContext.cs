@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace OrderCloud.DocRender
+namespace OrderCloud.DocRender.common
 {
 	public class UserContext
 	{

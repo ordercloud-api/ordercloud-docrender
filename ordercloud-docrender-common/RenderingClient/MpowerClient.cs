@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace OrderCloud.DocRender
+namespace OrderCloud.DocRender.common
 {
 	public class MpowerClient : TcpClient
 	{

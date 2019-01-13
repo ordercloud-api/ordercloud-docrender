@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage.Blob;
 using OrderCloud.AzureStorage;
 
-namespace OrderCloud.DocRender
+namespace OrderCloud.DocRender.common
 {
 	public class JobService
 	{

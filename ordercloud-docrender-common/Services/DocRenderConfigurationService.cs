@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using OrderCloud.AzureStorage;
 
-namespace OrderCloud.DocRender
+namespace OrderCloud.DocRender.common
 {
 	public class DocRenderConfigurationService
 	{

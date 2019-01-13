@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 
-namespace OrderCloud.DocRender
+namespace OrderCloud.DocRender.common
 {
 
 	public enum JobStatus { complete, error,unsubmitted, inprogress}

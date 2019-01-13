@@ -9,8 +9,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OrderCloud.AzureStorage;
+using OrderCloud.DocRender.common;
 
-namespace OrderCloud.DocRender
+namespace OrderCloud.DocRender.webapi
 {
 	public static class JobAssets
 	{

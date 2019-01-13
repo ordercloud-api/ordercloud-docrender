@@ -7,8 +7,9 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using OrderCloud.DocRender.common;
 
-namespace OrderCloud.DocRender.Functions
+namespace OrderCloud.DocRender.webapi
 {
 	public static class JobVars
 	{

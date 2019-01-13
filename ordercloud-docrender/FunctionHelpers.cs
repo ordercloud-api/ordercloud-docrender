@@ -5,9 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using OrderCloud.DocRender.common;
 using OrderCloud.SDK;
 
-namespace OrderCloud.DocRender
+namespace OrderCloud.DocRender.webapi
 {
 	public static class FunctionHelpers
 	{

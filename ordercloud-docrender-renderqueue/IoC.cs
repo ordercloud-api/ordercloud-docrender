@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.WindowsAzure.Storage.Blob.Protocol;
 using OrderCloud.AzureStorage;
 using OrderCloud.DocRender.common;
-using OrderCloud.SDK;
 
-namespace OrderCloud.DocRender.webapi
+
+namespace OrderCloud.DocRender.renderqueue
 {
 	public static class Container
 	{
@@ -22,13 +19,10 @@ namespace OrderCloud.DocRender.webapi
 			var appSettings = build.Get<AppSettings>();
 			
 			var s = new ServiceCollection();
-			s.AddTransient<JobService>();
 			s.AddTransient(x => new TableService(appSettings.StorageConnection));
 			s.AddTransient(x=> new BlobService(appSettings.StorageConnection));
 			s.AddTransient<QueueService>(x => new QueueService(appSettings.StorageConnection));
 			s.AddSingleton<AppSettings>(appSettings);
-			s.AddSingleton<OrderCloudClient>();
-			s.AddTransient<DocRenderConfigurationService>();
 			_serviceProvider = s.BuildServiceProvider();
 
 		}

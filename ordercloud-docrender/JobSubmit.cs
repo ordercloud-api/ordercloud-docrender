@@ -8,8 +8,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OrderCloud.AzureStorage;
+using OrderCloud.DocRender.common;
 
-namespace OrderCloud.DocRender.Functions
+namespace OrderCloud.DocRender.webapi
 {
     public static class JobSubmit
     {
@@ -27,7 +28,7 @@ namespace OrderCloud.DocRender.Functions
 	        else
 	        {
 		        job.JobStatus = JobStatus.inprogress.ToString();
-		        var t2 = Container.Get<QueueService>().QueueMessageAsync("renderjob", new { userContext, job });
+		        var t2 = Container.Get<QueueService>().QueueMessageAsync("renderjob", new QueueMessage{UserContext = userContext, LineItemJob = job });
 		        var t1 = Container.Get<TableService>().InsertOrReplaceAsync(job);
 		        Task.WaitAll(t1, t2);
 		        return new OkObjectResult(new { status = "OK" });
