@@ -28,7 +28,7 @@ namespace OrderCloud.DocRender.webapi
 	        else
 	        {
 		        job.JobStatus = JobStatus.inprogress.ToString();
-		        var t2 = Container.Get<QueueService>().QueueMessageAsync("renderjob", new QueueMessage{UserContext = userContext, LineItemJob = job });
+		        var t2 = Container.Get<QueueService>().QueueMessageAsync(Consts.RenderJobQueueName, new QueueMessage{UserContext = userContext, LineItemJob = job });
 		        var t1 = Container.Get<TableService>().InsertOrReplaceAsync(job);
 		        Task.WaitAll(t1, t2);
 		        return new OkObjectResult(new { status = "OK" });

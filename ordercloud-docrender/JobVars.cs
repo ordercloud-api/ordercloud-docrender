@@ -7,6 +7,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using OrderCloud.AzureStorage;
 using OrderCloud.DocRender.common;
 
 namespace OrderCloud.DocRender.webapi
@@ -23,6 +24,7 @@ namespace OrderCloud.DocRender.webapi
 		{
 			var UserContext = await FunctionHelpers.AuthAsync(req, orderdirection, orderid, lineid);
 			var job = Container.Get<JobService>();
+			var q = Container.Get<QueueService>();
 			await job.WriteJobFile(UserContext, "JobVars", "job.json", req.Body);
 			return new OkObjectResult(new { status = "OK" });
 		}

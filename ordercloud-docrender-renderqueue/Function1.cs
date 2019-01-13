@@ -12,7 +12,7 @@ namespace OrderCloud.DocRender.renderqueue
     public static class Function1
     {
         [FunctionName("ProcessDocRenderJob")]
-        public static async Task Run([QueueTrigger("renderjob", Connection = "StorageConnection")]string myQueueItem, ILogger log)
+        public static async Task Run([QueueTrigger(Consts.RenderJobQueueName, Connection = Consts.StorageConnectionSettingName)]string myQueueItem, ILogger log)
         {
 			var qm = JsonConvert.DeserializeObject<QueueMessage>(myQueueItem);
 			log.LogInformation($"username: {qm.UserContext.UserName}\r\n clientid: {qm.UserContext.ClientID} \r\n orderid: {qm.UserContext.OrderID}");
@@ -20,7 +20,7 @@ namespace OrderCloud.DocRender.renderqueue
 	        var q = Container.Get<QueueService>();
 			qm.LineItemJob.JobStatus = JobStatus.complete.ToString();
 			await t.InsertOrReplaceAsync(qm.LineItemJob);
-	        await q.QueueMessageAsync("completedjobs", qm);
+	        await q.QueueMessageAsync(Consts.CompletedJobQueueName, qm);
         }
     }
 }

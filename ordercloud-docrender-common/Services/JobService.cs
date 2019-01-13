@@ -12,38 +12,46 @@ namespace OrderCloud.DocRender.common
 	{
 		private readonly BlobService _blob;
 		private readonly TableService _table;
+		private readonly QueueService _queue;
 
-
-		public JobService(BlobService blob, TableService table)
+		
+		public JobService(BlobService blob, TableService table, QueueService queue)
 		{
 			_blob = blob;
 			_table = table;
+			_queue = queue;
 		}
 
 		public async Task WriteJobFile(UserContext userContext, string folder, string fileid, Stream s)
 		{
 			var lineJob = await GetOrSetLineJobAsync(userContext);
-			await _blob.WriteBlockBlobFromStreamAsync("docrenderapps", $"{userContext.DocRenderConfigurationID}/{lineJob.BlobFolder}/{folder}", fileid, s);
+			var folderPath = $"{userContext.DocRenderConfigurationID}/{lineJob.BlobFolder}/{folder}";
+			await _blob.WriteBlockBlobFromStreamAsync(Consts.ContentBlobContainerName, folderPath, fileid, s);
+			if(folder == Consts.AssetsFolderName)
+				await _queue.QueueMessageAsync(Consts.FileSyncQueueName, new FileChangeMessage{blobContainer = Consts.ContentBlobContainerName, fileAdded = true, filename = fileid, folderpath = folderPath});
 		}
 
 		public async Task<List<IListBlobItem>> ListAssets(UserContext userContext)
 		{
 			var lineJob = await GetOrSetLineJobAsync(userContext);
-			return await _blob.ListAllBlobsAsync("docrenderapps", $"{userContext.DocRenderConfigurationID}/{lineJob.BlobFolder}/assets");
+			return await _blob.ListAllBlobsAsync(Consts.ContentBlobContainerName, $"{userContext.DocRenderConfigurationID}/{lineJob.BlobFolder}/assets");
 		}
 		public async Task DeleteJobFile(UserContext userContext, string folder, string fileid)
 		{
 			var t = await GetOrSetLineJobAsync(userContext);
-			var containerRef = _blob.BlobClient.GetContainerReference("docrenderapps");
-			var d = containerRef.GetDirectoryReference($"{userContext.DocRenderConfigurationID}/{t.BlobFolder}/{folder}");
+			var containerRef = _blob.BlobClient.GetContainerReference(Consts.ContentBlobContainerName);
+			var folderPath = $"{userContext.DocRenderConfigurationID}/{t.BlobFolder}/{folder}";
+			var d = containerRef.GetDirectoryReference(folderPath);
 			var blob = d.GetBlockBlobReference(fileid);
 			await blob.DeleteAsync();
+			if(folder == Consts.AssetsFolderName)
+				await _queue.QueueMessageAsync(Consts.FileSyncQueueName, new FileChangeMessage{blobContainer = Consts.ContentBlobContainerName, fileAdded = true, filename = fileid, folderpath = folderPath});
 		}
 
 		public async Task<CloudBlockBlob> GetJobFile(UserContext userContext, string folder, string fileid)
 		{
 			var t = await GetOrSetLineJobAsync(userContext);
-			var containerRef = _blob.BlobClient.GetContainerReference("docrenderapps");
+			var containerRef = _blob.BlobClient.GetContainerReference(Consts.ContentBlobContainerName);
 			var d = containerRef.GetDirectoryReference($"{userContext.DocRenderConfigurationID}/{t.BlobFolder}/{folder}");
 			return d.GetBlockBlobReference(fileid);
 		}
