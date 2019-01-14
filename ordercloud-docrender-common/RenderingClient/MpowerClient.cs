@@ -10,7 +10,7 @@ using System.Xml;
 
 namespace OrderCloud.DocRender.common
 {
-	public class MpowerClient : TcpClient
+	public class MpowerClient : TcpClient, IDocRenderer
 	{
 		private readonly AppSettings _settings;
 
@@ -19,7 +19,6 @@ namespace OrderCloud.DocRender.common
 			_settings = settings;
 		}
 
-		// SubmitToMpower takes the command packet and an out string for the response
 		public async Task<JobRenderResponse>SubmitRenderJobAsync(Dictionary<string, string> DocVars, Func<string, Task> moveFileOpAsync)
 		{
 			var jobResponse = new JobRenderResponse {DateQueued = DateTime.Now, Success = false, ServerJobResponse = ""};

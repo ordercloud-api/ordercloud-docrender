@@ -1,9 +1,8 @@
 {
-	"projectid": "bcard01",
-	"configurationid": "customername",
-	"orderid": "123",
-	"lineitemid": "456"
-	"specs": [
-
+	"ProjectID": "bcard01",
+	"Specs": [
+			{ "Firstname": "John" },
+			{ "Lastname": "Doe" },
+			{ "Phone":  "123-456-7890" }
 	] 
 }

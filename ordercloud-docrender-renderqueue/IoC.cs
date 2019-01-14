@@ -23,9 +23,9 @@ namespace OrderCloud.DocRender.renderqueue
 			s.AddTransient(x=> new BlobService(appSettings.StorageConnection));
 			s.AddTransient<QueueService>(x => new QueueService(appSettings.StorageConnection));
 			s.AddSingleton<AppSettings>(appSettings);
+			s.AddTransient<IDocRenderer, MpowerClient>();
 			_serviceProvider = s.BuildServiceProvider();
 		}
-
 		public static T Get<T>()
 		{
 			var o = _serviceProvider.GetService<T>();

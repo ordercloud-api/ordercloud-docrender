@@ -89,11 +89,19 @@ namespace OrderCloud.AzureStorage
 			return await blob.OpenReadAsync();
 		}
 
-		public async Task<string> ReadTextFileBlobAsync(string storageContainerName, string blobName)
+		public async Task<string> ReadTextFileBlobAsync(string storageContainerName, string folderpath, string blobName)
 		{
 			var container = _blobClient.GetContainerReference(storageContainerName);
-			var blob = container.GetBlockBlobReference(blobName);
-			//url = blob.Uri.ToString();
+			
+			CloudBlockBlob blob = null;
+			if (!string.IsNullOrEmpty(folderpath))
+			{
+				var d = container.GetDirectoryReference(folderpath);
+				blob = d.GetBlockBlobReference(blobName);
+			}
+			else
+				blob = container.GetBlockBlobReference(blobName);
+			
 			var body = await blob.DownloadTextAsync();
 			return body;
 		}

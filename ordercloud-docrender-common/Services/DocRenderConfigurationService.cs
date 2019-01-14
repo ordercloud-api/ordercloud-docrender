@@ -22,7 +22,7 @@ namespace OrderCloud.DocRender.common
 		{
 			if (_configurationFile == null)
 			{
-				var file = await _blob.ReadTextFileBlobAsync("docrenderapps", "configurations.json");
+				var file = await _blob.ReadTextFileBlobAsync(Consts.ContentBlobContainerName, null, "configurations.json");
 				_configurationFile = JsonConvert.DeserializeObject<JsonConfigurationFile>(file);
 			}
 

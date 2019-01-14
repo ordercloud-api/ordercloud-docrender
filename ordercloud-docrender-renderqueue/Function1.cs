@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OrderCloud.AzureStorage;
 using OrderCloud.DocRender.common;
+using OrderCloud.DocRender.common.Models;
 
 namespace OrderCloud.DocRender.renderqueue
 {
@@ -16,11 +18,24 @@ namespace OrderCloud.DocRender.renderqueue
         {
 			var qm = JsonConvert.DeserializeObject<QueueMessage>(myQueueItem);
 			log.LogInformation($"username: {qm.UserContext.UserName}\r\n clientid: {qm.UserContext.ClientID} \r\n orderid: {qm.UserContext.OrderID}");
-			var t = Container.Get<TableService>();
-	        var q = Container.Get<QueueService>();
+			
+			var table = Container.Get<TableService>();
+	        var queue = Container.Get<QueueService>();
+			var renderService = Container.Get<IDocRenderer>();
+			var blob = Container.Get<BlobService>();
+	        
+			var jobFileBody = await blob.ReadTextFileBlobAsync(Consts.ContentBlobContainerName, Path.Combine(qm.UserContext.DocRenderConfigurationID, qm.LineItemJob.BlobFolder, Consts.JobVarFolderName), Consts.JobVarFileName);
+			var jobFile = JsonConvert.DeserializeObject<JsonJobVarsFile>(jobFileBody);
+
+			//await renderService.SubmitRenderJobAsync(jobFile.Specs, MoveFileOpAsync);
 			qm.LineItemJob.JobStatus = JobStatus.complete.ToString();
-			await t.InsertOrReplaceAsync(qm.LineItemJob);
-	        await q.QueueMessageAsync(Consts.CompletedJobQueueName, qm);
+			await table.InsertOrReplaceAsync(qm.LineItemJob);
+	        await queue.QueueMessageAsync(Consts.CompletedJobQueueName, qm);
         }
+
+	    private static async Task MoveFileOpAsync(string filepath)
+	    {
+		    throw new NotImplementedException();
+	    }
     }
 }
