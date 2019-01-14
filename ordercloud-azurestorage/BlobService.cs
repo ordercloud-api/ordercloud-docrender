@@ -63,16 +63,30 @@ namespace OrderCloud.AzureStorage
 			await containerRef.CreateIfNotExistsAsync();
 
 			CloudBlockBlob blob = null;
-			if (string.IsNullOrEmpty(folderpath))
+			if (!string.IsNullOrEmpty(folderpath))
 			{
 				var d = containerRef.GetDirectoryReference(folderpath);
-				d.GetBlockBlobReference(blobName);
+				blob = d.GetBlockBlobReference(blobName);
 			}
 			else
 				blob = containerRef.GetBlockBlobReference(blobName);
 
 			await blob.UploadTextAsync(textOfFile);
 			return blob.Uri;
+		}
+
+		public async Task<Stream> OpenReadonlyBlobStreamAsync(string storagecontainername, string folderpath, string blobname)
+		{
+			var container = _blobClient.GetContainerReference(storagecontainername);
+			CloudBlockBlob blob = null;
+			if (!string.IsNullOrEmpty(folderpath))
+			{
+				var d = container.GetDirectoryReference(folderpath);
+				blob = d.GetBlockBlobReference(blobname);
+			}
+			else
+				blob = container.GetBlockBlobReference(blobname);
+			return await blob.OpenReadAsync();
 		}
 
 		public async Task<string> ReadTextFileBlobAsync(string storageContainerName, string blobName)

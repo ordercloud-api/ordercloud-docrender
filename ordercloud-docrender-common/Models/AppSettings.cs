@@ -9,6 +9,7 @@ namespace OrderCloud.DocRender.common
 		public string StorageConnection { get; set; }
 		public string LocalDriveLeterForMpowerFinaloutput { get; set; }
 		public string MpowerHostName { get; set; }
-		public int MpowerTCPPort { get; set; }
+		public int MpowerTcpPort { get; set; }
+		public string LocalJobAssetCacheFolder {get;set;}
 	}
 }

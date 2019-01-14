@@ -25,11 +25,11 @@ namespace OrderCloud.DocRender.common
 			var jobResponse = new JobRenderResponse {DateQueued = DateTime.Now, Success = false, ServerJobResponse = ""};
 			try
 			{
-				this.Connect(_settings.MpowerHostName, _settings.MpowerTCPPort);
+				this.Connect(_settings.MpowerHostName, _settings.MpowerTcpPort);
 			}
 			catch (SocketException ex)
 			{
-				jobResponse.ErrorMessage = "Mpower doesn't appear to be running on: " + _settings.MpowerHostName + " port: " + _settings.MpowerTCPPort + ". Error: " + ex.Message; ;
+				jobResponse.ErrorMessage = "Mpower doesn't appear to be running on: " + _settings.MpowerHostName + " port: " + _settings.MpowerTcpPort + ". Error: " + ex.Message; ;
 				return jobResponse;
 			}
 			Socket sock = this.Client;

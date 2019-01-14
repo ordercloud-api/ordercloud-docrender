@@ -45,7 +45,7 @@ namespace OrderCloud.DocRender.common
 			var blob = d.GetBlockBlobReference(fileid);
 			await blob.DeleteAsync();
 			if(folder == Consts.AssetsFolderName)
-				await _queue.QueueMessageAsync(Consts.FileSyncQueueName, new FileChangeMessage{blobContainer = Consts.ContentBlobContainerName, fileAdded = true, filename = fileid, folderpath = folderPath});
+				await _queue.QueueMessageAsync(Consts.FileSyncQueueName, new FileChangeMessage{blobContainer = Consts.ContentBlobContainerName, fileAdded = false, filename = fileid, folderpath = folderPath});
 		}
 
 		public async Task<CloudBlockBlob> GetJobFile(UserContext userContext, string folder, string fileid)
