@@ -28,9 +28,7 @@ namespace OrderCloud.DocRender.webapi
 			s.AddTransient<QueueService>(x => new QueueService(appSettings.StorageConnection));
 			s.AddSingleton<AppSettings>(appSettings);
 			s.AddSingleton<OrderCloudClient>();
-			s.AddTransient<DocRenderConfigurationService>();
 			_serviceProvider = s.BuildServiceProvider();
-
 		}
 
 		public static T Get<T>()
