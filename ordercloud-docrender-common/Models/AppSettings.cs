@@ -11,5 +11,6 @@ namespace OrderCloud.DocRender.common
 		public string MpowerHostName { get; set; }
 		public int MpowerTcpPort { get; set; }
 		public string LocalJobAssetCacheFolder {get;set;}
+		public string MpowerProjectFolderRoot {get;set;}
 	}
 }

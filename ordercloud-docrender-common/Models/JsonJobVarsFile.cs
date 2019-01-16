@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 
-namespace OrderCloud.DocRender.common.Models
+namespace OrderCloud.DocRender.common
 {
 	public class JsonJobVarsFile
 	{

@@ -26,8 +26,10 @@ namespace OrderCloud.DocRender.webapi
 			s.AddTransient(x => new TableService(appSettings.StorageConnection));
 			s.AddTransient(x=> new BlobService(appSettings.StorageConnection));
 			s.AddTransient<QueueService>(x => new QueueService(appSettings.StorageConnection));
+			s.AddTransient<DocRenderConfigurationService>();
 			s.AddSingleton<AppSettings>(appSettings);
 			s.AddSingleton<OrderCloudClient>();
+			
 			_serviceProvider = s.BuildServiceProvider();
 		}
 

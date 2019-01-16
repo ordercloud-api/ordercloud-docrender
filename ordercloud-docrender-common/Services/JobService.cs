@@ -22,7 +22,7 @@ namespace OrderCloud.DocRender.common
 			_queue = queue;
 		}
 
-		public async Task WriteJobFile(UserContext userContext, string folder, string fileid, Stream s)
+		public async Task WriteJobFileAsync(UserContext userContext, string folder, string fileid, Stream s)
 		{
 			var lineJob = await GetOrSetLineJobAsync(userContext);
 			var folderPath = $"{userContext.DocRenderConfigurationID}/{lineJob.BlobFolder}/{folder}";
@@ -31,12 +31,12 @@ namespace OrderCloud.DocRender.common
 				await _queue.QueueMessageAsync(Consts.FileSyncQueueName, new FileChangeMessage{blobContainer = Consts.ContentBlobContainerName, fileAdded = true, filename = fileid, folderpath = folderPath});
 		}
 
-		public async Task<List<IListBlobItem>> ListAssets(UserContext userContext)
+		public async Task<List<IListBlobItem>> ListAssetsAsync(UserContext userContext)
 		{
 			var lineJob = await GetOrSetLineJobAsync(userContext);
 			return await _blob.ListAllBlobsAsync(Consts.ContentBlobContainerName, $"{userContext.DocRenderConfigurationID}/{lineJob.BlobFolder}/assets");
 		}
-		public async Task DeleteJobFile(UserContext userContext, string folder, string fileid)
+		public async Task DeleteJobFileAsync(UserContext userContext, string folder, string fileid)
 		{
 			var t = await GetOrSetLineJobAsync(userContext);
 			var containerRef = _blob.BlobClient.GetContainerReference(Consts.ContentBlobContainerName);
@@ -48,7 +48,7 @@ namespace OrderCloud.DocRender.common
 				await _queue.QueueMessageAsync(Consts.FileSyncQueueName, new FileChangeMessage{blobContainer = Consts.ContentBlobContainerName, fileAdded = false, filename = fileid, folderpath = folderPath});
 		}
 
-		public async Task<CloudBlockBlob> GetJobFile(UserContext userContext, string folder, string fileid)
+		public async Task<CloudBlockBlob> GetJobFileAsync(UserContext userContext, string folder, string fileid)
 		{
 			var t = await GetOrSetLineJobAsync(userContext);
 			var containerRef = _blob.BlobClient.GetContainerReference(Consts.ContentBlobContainerName);

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OrderCloud.AzureStorage;
 using OrderCloud.DocRender.common;
+using Microsoft.Extensions.Logging;
 
 
 namespace OrderCloud.DocRender.QueueProcess
@@ -17,7 +18,7 @@ namespace OrderCloud.DocRender.QueueProcess
 		public static async Task Main(string[] args)
 		{
 			var builder = new HostBuilder()
-					
+					.ConfigureLogging(loggingBuilder => loggingBuilder.AddConsole())
 					.UseEnvironment("Development")
 					.ConfigureWebJobs(b =>
 					{
@@ -50,6 +51,10 @@ namespace OrderCloud.DocRender.QueueProcess
 			{
 				services.AddTransient<AppSettings>(AppSettingsImplementationFactory);
 				services.AddTransient<BlobService>(BlobImplementationFactory);
+				services.AddTransient<TableService>(TableImplementationFactory);
+				services.AddTransient<QueueService>(QImplementationFactory);
+				services.AddTransient<JobService>();
+				services.AddTransient<MpowerClient>();
 				services.AddTransient<FileSyncFunction>();
 				
 				//services.AddTransient<SomeQueueTriggerFunctions, SomeQueueTriggerFunctions>();
@@ -61,6 +66,18 @@ namespace OrderCloud.DocRender.QueueProcess
 			{
 				await host.RunAsync();
 			}
+		}
+
+		private static QueueService QImplementationFactory(IServiceProvider arg)
+		{
+			var settings = arg.GetService<AppSettings>();
+			return new QueueService(settings.StorageConnection);
+		}
+
+		private static TableService TableImplementationFactory(IServiceProvider arg)
+		{
+			var settings = arg.GetService<AppSettings>();
+			return new TableService(settings.StorageConnection);
 		}
 
 		private static BlobService BlobImplementationFactory(IServiceProvider arg)

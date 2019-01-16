@@ -16,11 +16,18 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ordercloud-azurestorage\ordercloud-azurestorage.csproj" />
     <ProjectReference Include="..\ordercloud-docrender-common\ordercloud-docrender-common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="runOnPrem.cmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

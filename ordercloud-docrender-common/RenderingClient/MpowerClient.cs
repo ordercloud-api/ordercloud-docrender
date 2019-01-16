@@ -7,10 +7,11 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using OrderCloud.DocRender.common;
 
 namespace OrderCloud.DocRender.common
 {
-	public class MpowerClient : TcpClient, IDocRenderer
+	public class MpowerClient : TcpClient
 	{
 		private readonly AppSettings _settings;
 
@@ -19,7 +20,7 @@ namespace OrderCloud.DocRender.common
 			_settings = settings;
 		}
 
-		public async Task<JobRenderResponse>SubmitRenderJobAsync(Dictionary<string, string> DocVars, Func<string, Task> moveFileOpAsync)
+		public async Task<JobRenderResponse>SubmitRenderJobAsync(JobQueueMessage jq, JsonJobVarsFile jobFile, Func<UserContext, string, Task> moveFileOpAsync)
 		{
 			var jobResponse = new JobRenderResponse {DateQueued = DateTime.Now, Success = false, ServerJobResponse = ""};
 			try
@@ -44,7 +45,7 @@ namespace OrderCloud.DocRender.common
 
 			try
 			{
-				Byte[] dataSend = BuildCommandPacket(DocVars);
+				Byte[] dataSend = BuildCommandPacket(jq.JobName, jobFile);
 				NetworkStream stream = this.GetStream();
 
 				await stream.WriteAsync(dataSend, 0, dataSend.Length);
@@ -74,11 +75,11 @@ namespace OrderCloud.DocRender.common
 			}
 			this.Close();
 			
-			jobResponse.Success = await FindPathAndMoveFileAsync(jobResponse.ServerJobResponse, moveFileOpAsync);
+			jobResponse.Success = await FindPathAndMoveFileAsync(jq.UserContext, jobResponse.ServerJobResponse, moveFileOpAsync);
 			return jobResponse;
 		}
 
-		private async Task<bool> FindPathAndMoveFileAsync(string responseData, Func<string, Task>moveFileOpAsync)
+		private async Task<bool> FindPathAndMoveFileAsync(UserContext userContext, string responseData, Func<UserContext, string, Task>moveFileOpAsync)
 		{
 			StringReader sr = new StringReader(responseData);
 			string transactionID = sr.ReadLine();
@@ -111,7 +112,7 @@ namespace OrderCloud.DocRender.common
 				return false; 
 
 			var file = new FileInfo(files[0]);
-			await moveFileOpAsync(files[0]);
+			await moveFileOpAsync(userContext, files[0]);
 			try
 			{
 				Directory.Delete(jobOutputPath, true);
@@ -120,7 +121,7 @@ namespace OrderCloud.DocRender.common
 
 			return true;
 		}
-		private byte[] BuildCommandPacket(Dictionary<string, string> DocVars)
+		private byte[] BuildCommandPacket(string jobName, JsonJobVarsFile jobVars)
 		{
 			var commandName = "SumitJob";
 			XmlDocument xml = new XmlDocument();
@@ -142,16 +143,16 @@ namespace OrderCloud.DocRender.common
 				node.AppendChild(spec);
 			}
 
-			AddVar("JobName", "preview|proof|prod", job);
+			AddVar("JobName", jobName, job);
 			AddVar("_sys_QueueName", "jobqueuname", job);
 			AddVar("_sys_ClientJobMonitor", "True", job);
-			AddVar("ProjectName", "projectid and path", job);
+			AddVar("ProjectName", Path.Combine(_settings.MpowerProjectFolderRoot, jobVars.ProjectID), job);
 			AddVar("_sys_FinalOutputDir", $@"{_settings.LocalDriveLeterForMpowerFinaloutput}\finaloutput", job);
 			//AddVar("_sys_JobDataSourceFile", "a datasource for this job not the project", job);
 
-			foreach (var name in DocVars.Keys)
+			foreach (var name in jobVars.Specs.Keys)
 			{
-				AddVar(name, DocVars[name], doc);
+				AddVar(name, jobVars.Specs[name], doc);
 			}
 
 			return System.Text.Encoding.Unicode.GetBytes(xml.OuterXml);

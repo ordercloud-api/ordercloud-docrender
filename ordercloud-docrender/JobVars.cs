@@ -25,7 +25,7 @@ namespace OrderCloud.DocRender.webapi
 			var UserContext = await FunctionHelpers.AuthAsync(req, orderdirection, orderid, lineid);
 			var job = Container.Get<JobService>();
 			var q = Container.Get<QueueService>();
-			await job.WriteJobFile(UserContext, Consts.JobVarFolderName, Consts.JobVarFileName, req.Body);
+			await job.WriteJobFileAsync(UserContext, Consts.JobVarFolderName, Consts.JobVarFileName, req.Body);
 			return new OkObjectResult(new { status = "OK" });
 		}
 
@@ -39,7 +39,7 @@ namespace OrderCloud.DocRender.webapi
 			)
 		{
 			var UserContext = await FunctionHelpers.AuthAsync(req, orderdirection, orderid, lineid);
-			var file = await Container.Get<JobService>().GetJobFile(UserContext, Consts.JobVarFolderName, Consts.JobVarFileName);
+			var file = await Container.Get<JobService>().GetJobFileAsync(UserContext, Consts.JobVarFolderName, Consts.JobVarFileName);
 			var stream = await file.OpenReadAsync();
 			return new FileStreamResult(stream, file.Properties.ContentType);
 		}

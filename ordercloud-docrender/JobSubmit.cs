@@ -16,8 +16,8 @@ namespace OrderCloud.DocRender.webapi
     {
         [FunctionName("JobStatus")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "jobs/{orderdirection}/{orderid}/{lineid}/render")] HttpRequest req,
-            ILogger log, string orderdirection, string orderid, string lineid)
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "jobs/{orderdirection}/{orderid}/{lineid}/render/{jobname}")] HttpRequest req,
+            ILogger log, string orderdirection, string orderid, string lineid, string jobname)
         {
 			var userContext = await FunctionHelpers.AuthAsync(req, orderdirection, orderid, lineid);
 			var job = await Container.Get<JobService>().GetOrSetLineJobAsync(userContext, true);
@@ -28,7 +28,7 @@ namespace OrderCloud.DocRender.webapi
 	        else
 	        {
 		        job.JobStatus = JobStatus.inprogress.ToString();
-		        var t2 = Container.Get<QueueService>().QueueMessageAsync(Consts.RenderJobQueueName, new QueueMessage{UserContext = userContext, LineItemJob = job });
+		        var t2 = Container.Get<QueueService>().QueueMessageAsync(Consts.RenderJobQueueName, new JobQueueMessage{JobName = jobname, UserContext = userContext, LineItemJob = job });
 		        var t1 = Container.Get<TableService>().InsertOrReplaceAsync(job);
 		        Task.WaitAll(t1, t2);
 		        return new OkObjectResult(new { status = "OK" });
