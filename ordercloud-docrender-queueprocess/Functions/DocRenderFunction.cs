@@ -8,8 +8,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OrderCloud.AzureStorage;
 using OrderCloud.DocRender.common;
-using OrderCloud.DocRender.common;
-
 
 namespace OrderCloud.DocRender.QueueProcess
 {
@@ -36,10 +34,10 @@ namespace OrderCloud.DocRender.QueueProcess
 			var jobVarBody = await blockBlob.DownloadTextAsync();
 			var jobFile = JsonConvert.DeserializeObject<JsonJobVarsFile>(jobVarBody);
 			
-			//await _renderService.SubmitRenderJobAsync(qm.UserContext, jobFile.Specs, MoveFileOpAsync);
+			await _renderService.SubmitRenderJobAsync(qm, jobFile, MoveFileOpAsync);
 			qm.LineItemJob.JobStatus = JobStatus.complete.ToString();
 			await _table.InsertOrReplaceAsync(qm.LineItemJob);
-			await _queue.QueueMessageAsync(Consts.CompletedJobQueueName, qm);
+			await _queue.QueueMessageAsync(Consts.CompletedJobQueueName, qm);//this queue could handle notifying the browser the job is done on the web side. It'd be a great use of web sockets.
 		}
 
 		private async Task MoveFileOpAsync(UserContext userContext, string filepath)

@@ -8,8 +8,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OrderCloud.AzureStorage;
 using OrderCloud.DocRender.common;
-using Microsoft.Extensions.Logging;
-
 
 namespace OrderCloud.DocRender.QueueProcess
 {

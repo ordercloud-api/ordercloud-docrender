@@ -6,7 +6,6 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using OrderCloud.AzureStorage;
 using OrderCloud.DocRender.common;
 
@@ -14,7 +13,7 @@ namespace OrderCloud.DocRender.webapi
 {
     public static class JobSubmit
     {
-        [FunctionName("JobStatus")]
+        [FunctionName("JobSubmit")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "jobs/{orderdirection}/{orderid}/{lineid}/render/{jobname}")] HttpRequest req,
             ILogger log, string orderdirection, string orderid, string lineid, string jobname)
@@ -32,7 +31,8 @@ namespace OrderCloud.DocRender.webapi
 		        var t1 = Container.Get<TableService>().InsertOrReplaceAsync(job);
 		        Task.WaitAll(t1, t2);
 		        return new OkObjectResult(new { status = "OK" });
+				//somehow the browser needs to be notified when the render job is done, but it shouldn't block this call. it's either web sockets or browser polling. Right now, the render job drops a message on the queue named Consts.CompletedJobQueueName, but nothing is done with it.
 			}
-        }
+		}
 	}
 }
